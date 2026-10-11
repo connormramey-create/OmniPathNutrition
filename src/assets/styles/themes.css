@@ -1,3 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Existing theme definitions below */
+[data-theme="pretty"] {
+  --bg-primary: #FFF5F7;
+  --card-bg: #FFFFFF;
+  --accent: #F472B6;
+  --text-main: #4A154B;
+}
+/* ... rest of your theme variables ... */
+
 /* Pretty Theme: Soft pastels, rounded borders, aesthetic serif/sans typography */
 [data-theme="pretty"] {
   --bg-primary: #FFF5F7;
