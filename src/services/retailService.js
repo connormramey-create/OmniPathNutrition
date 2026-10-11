@@ -1,6 +1,17 @@
 // src/services/retailService.js
 
-// Kroger API / Cart Sync
+// Kroger Direct Shopping Cart & List App Deep Link
+export function generateKrogerCartLink(groceryItems) {
+  if (!groceryItems || groceryItems.length === 0) return '#';
+  
+  // Format items into search query or direct cart add string
+  const itemNames = groceryItems.map(i => encodeURIComponent(i.name.trim())).join('%20');
+  
+  // Mobile app deep-link with fallback to web list search
+  return `https://www.kroger.com/search?query=${itemNames}&redirect=cart`;
+}
+
+// Kroger API Direct Cart Push (for authenticated users)
 export async function syncToKrogerCart(groceryItems, userToken) {
   if (!userToken) throw new Error("Kroger OAuth token required.");
   
@@ -22,20 +33,19 @@ export async function syncToKrogerCart(groceryItems, userToken) {
   return await response.json();
 }
 
-// Kroger Direct Search Redirect
-export function generateKrogerSearchLink(groceryItems) {
-  const query = groceryItems.map(i => i.name).join(' ');
-  return `https://www.kroger.com/search?query=${encodeURIComponent(query)}`;
-}
-
-// Walmart Direct Search / List Redirect
-export function generateWalmartSearchLink(groceryItems) {
-  const query = groceryItems.map(i => i.name).join(' ');
+// Walmart Direct App / Shopping List Redirect
+export function generateWalmartListLink(groceryItems) {
+  if (!groceryItems || groceryItems.length === 0) return '#';
+  
+  const query = groceryItems.map(i => i.name).join(', ');
+  // Direct Walmart List & Search URL
   return `https://www.walmart.com/search?q=${encodeURIComponent(query)}`;
 }
 
-// Publix Storefront via Instacart Deep-Link
+// Publix Storefront via Instacart Deep-Link Direct to Cart
 export function generatePublixInstacartLink(groceryItems) {
+  if (!groceryItems || groceryItems.length === 0) return '#';
+
   const searchTerms = groceryItems.map(i => encodeURIComponent(i.name)).join(",");
   return `https://www.instacart.com/store/publix/search_v3/${searchTerms}`;
 }
