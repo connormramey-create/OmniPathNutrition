@@ -2,38 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Existing theme definitions below */
-[data-theme="pretty"] {
-  --bg-primary: #FFF5F7;
-  --card-bg: #FFFFFF;
-  --accent: #F472B6;
-  --text-main: #4A154B;
-}
-/* ... rest of your theme variables ... */
-
-/* Pretty Theme: Soft pastels, rounded borders, aesthetic serif/sans typography */
-[data-theme="pretty"] {
-  --bg-primary: #FFF5F7;
-  --card-bg: #FFFFFF;
-  --accent: #F472B6;
-  --text-main: #4A154B;
-  --border-radius: 18px;
+/* 1. Standard Minimalist Theme */
+[data-theme="standard"] {
+  --bg-primary: #0f172a;
+  --card-bg: #1e293b;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --border-radius: 8px;
 }
 
-/* Manly Theme: Dark metallic, industrial accents, high-contrast, angular borders */
+/* 2. Pretty Theme (Enhanced & Much Prettier) */
+[data-theme="pretty"] {
+  --bg-primary: #fff0f5;
+  --card-bg: #ffffff;
+  --accent: #ec4899;
+  --accent-hover: #db2777;
+  --text-main: #4a044e;
+  --text-muted: #86198f;
+  --border-color: #fbcfe8;
+  --border-radius: 20px;
+  --shadow-style: 0 10px 25px -5px rgba(236, 72, 153, 0.15);
+}
+
+/* 3. Manly Theme */
 [data-theme="manly"] {
-  --bg-primary: #121212;
-  --card-bg: #1E1E1E;
-  --accent: #E63946;
-  --text-main: #E0E0E0;
+  --bg-primary: #0d0d0d;
+  --card-bg: #171717;
+  --accent: #dc2626;
+  --accent-hover: #b91c1c;
+  --text-main: #e5e5e5;
+  --text-muted: #a3a3a3;
+  --border-color: #262626;
   --border-radius: 2px;
 }
 
-/* Standard Theme: Modern minimalist Slate/Tailwind styling */
-[data-theme="standard"] {
-  --bg-primary: #F8FAFC;
-  --card-bg: #FFFFFF;
-  --accent: #2563EB;
-  --text-main: #0F172A;
-  --border-radius: 8px;
+/* 4. Beach Vibe Theme */
+[data-theme="beach"] {
+  --bg-primary: #e0f2fe;
+  --card-bg: #ffffff;
+  --accent: #0284c7;
+  --accent-hover: #0369a1;
+  --text-main: #0c4a6e;
+  --text-muted: #0369a1;
+  --border-color: #bae6fd;
+  --border-radius: 14px;
+}
+
+/* 5. Circus Theme */
+[data-theme="circus"] {
+  --bg-primary: #fef2f2;
+  --card-bg: #ffffff;
+  --accent: #d97706;
+  --accent-hover: #b45309;
+  --text-main: #7f1d1d;
+  --text-muted: #991b1b;
+  --border-color: #fca5a5;
+  --border-radius: 12px;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
