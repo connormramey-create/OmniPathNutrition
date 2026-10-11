@@ -5,6 +5,7 @@ import { searchUSDAFood } from './services/usdaService';
 import { exportMealPlanToWord } from './services/exportService';
 import { consolidateGroceryList } from './services/groceryAggregator';
 import { generatePublixInstacartLink } from './services/retailService';
+import { saveUserData, getUserData } from './services/dbService';
 import ThemeSwitcher from './components/ui/ThemeSwitcher';
 import AuthModal from './components/auth/AuthModal';
 import { auth } from './config/firebase';
@@ -14,24 +15,78 @@ export default function App() {
   const [theme, setTheme] = useState('standard');
   const [user, setUser] = useState(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [goalMode, setGoalMode] = useState('maintain'); // gain, lean, maintain
-  const [budgetTier, setBudgetTier] = useState(1); // 1, 2, 3
+  const [goalMode, setGoalMode] = useState('maintain');
+  const [budgetTier, setBudgetTier] = useState(1);
   const [activeFlags, setActiveFlags] = useState([]);
   const [selectedMealIds, setSelectedMealIds] = useState([]);
   const [usdaQuery, setUsdaQuery] = useState('');
   const [usdaResults, setUsdaResults] = useState([]);
 
+  // Load user data from Firebase Firestore upon authentication
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        const cloudData = await getUserData(currentUser.uid);
+        if (cloudData) {
+          if (cloudData.theme) {
+            setTheme(cloudData.theme);
+            document.documentElement.setAttribute('data-theme', cloudData.theme);
+          }
+          if (cloudData.goalMode) setGoalMode(cloudData.goalMode);
+          if (cloudData.budgetTier) setBudgetTier(cloudData.budgetTier);
+          if (cloudData.activeFlags) setActiveFlags(cloudData.activeFlags);
+          if (cloudData.selectedMealIds) setSelectedMealIds(cloudData.selectedMealIds);
+        }
+      }
     });
     return () => unsubscribe();
   }, []);
 
+  // Sync state changes directly to Firebase Firestore
+  const syncToCloud = (updatedState = {}) => {
+    if (!user) return;
+    const currentState = {
+      theme,
+      goalMode,
+      budgetTier,
+      activeFlags,
+      selectedMealIds,
+      ...updatedState
+    };
+    saveUserData(user.uid, currentState);
+  };
+
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
+    syncToCloud({ theme: newTheme });
+  };
+
+  const handleGoalChange = (mode) => {
+    setGoalMode(mode);
+    syncToCloud({ goalMode: mode });
+  };
+
+  const handleBudgetChange = (tier) => {
+    setBudgetTier(tier);
+    syncToCloud({ budgetTier: tier });
+  };
+
   const toggleFlag = (flagId) => {
-    setActiveFlags(prev =>
-      prev.includes(flagId) ? prev.filter(f => f !== flagId) : [...prev, flagId]
-    );
+    const updatedFlags = activeFlags.includes(flagId)
+      ? activeFlags.filter(f => f !== flagId)
+      : [...activeFlags, flagId];
+    setActiveFlags(updatedFlags);
+    syncToCloud({ activeFlags: updatedFlags });
+  };
+
+  const toggleMealSelection = (mealId) => {
+    const updatedMeals = selectedMealIds.includes(mealId)
+      ? selectedMealIds.filter(id => id !== mealId)
+      : [...selectedMealIds, mealId];
+    setSelectedMealIds(updatedMeals);
+    syncToCloud({ selectedMealIds: updatedMeals });
   };
 
   const filteredMeals = mealsData.filter(meal => {
@@ -66,10 +121,10 @@ export default function App() {
       <header className="flex flex-wrap justify-between items-center gap-4 border-b border-gray-700 pb-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">OmniPath Nutrition</h1>
-          <p className="text-xs opacity-75">Automated Meal & Grocery Intelligence</p>
+          <p className="text-xs opacity-75">Automated Cloud Meal & Grocery Intelligence</p>
         </div>
         <div className="flex items-center gap-4">
-          <ThemeSwitcher currentTheme={theme} setTheme={setTheme} />
+          <ThemeSwitcher currentTheme={theme} setTheme={handleThemeChange} />
           {user ? (
             <button onClick={() => signOut(auth)} className="text-xs border px-3 py-1 rounded">
               Log Out ({user.email})
@@ -82,7 +137,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Controls Bar: Goal & Budget */}
+      {/* Controls Bar */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[var(--card-bg)] p-4 rounded-lg border border-gray-700">
         <div>
           <label className="text-xs font-bold uppercase block mb-2">Profile Goal Mode</label>
@@ -90,7 +145,7 @@ export default function App() {
             {['gain', 'lean', 'maintain'].map((mode) => (
               <button
                 key={mode}
-                onClick={() => setGoalMode(mode)}
+                onClick={() => handleGoalChange(mode)}
                 className={`flex-1 py-1 text-xs capitalize font-semibold rounded ${
                   goalMode === mode ? 'bg-[var(--accent)] text-white' : 'border border-gray-600'
                 }`}
@@ -106,7 +161,7 @@ export default function App() {
             {[1, 2, 3].map((tier) => (
               <button
                 key={tier}
-                onClick={() => setBudgetTier(tier)}
+                onClick={() => handleBudgetChange(tier)}
                 className={`flex-1 py-1 text-xs font-semibold rounded ${
                   budgetTier === tier ? 'bg-[var(--accent)] text-white' : 'border border-gray-600'
                 }`}
@@ -134,9 +189,8 @@ export default function App() {
         ))}
       </div>
 
-      {/* Main Grid: Meal Selection & USDA Lookup */}
+      {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Meals Column */}
         <div className="lg:col-span-2 space-y-4">
           <h2 className="text-lg font-bold">Starter Meals ({filteredMeals.length})</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2">
@@ -151,11 +205,7 @@ export default function App() {
                     </p>
                   </div>
                   <button
-                    onClick={() =>
-                      setSelectedMealIds(prev =>
-                        isSelected ? prev.filter(id => id !== meal.id) : [...prev, meal.id]
-                      )
-                    }
+                    onClick={() => toggleMealSelection(meal.id)}
                     className={`mt-3 py-1 px-2 text-xs font-bold rounded ${
                       isSelected ? 'bg-green-600 text-white' : 'border border-gray-500'
                     }`}
@@ -168,7 +218,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* USDA Central API Search Column */}
+        {/* USDA Search */}
         <div className="bg-[var(--card-bg)] p-4 rounded border border-gray-700 space-y-4">
           <h2 className="text-lg font-bold">USDA Food Lookup</h2>
           <form onSubmit={handleUSDASearch} className="flex gap-2">
@@ -195,7 +245,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* Shopping List & Export Section */}
+      {/* Grocery List & Export */}
       {selectedMeals.length > 0 && (
         <div className="bg-[var(--card-bg)] p-4 rounded border border-gray-700 space-y-4">
           <div className="flex justify-between items-center">
