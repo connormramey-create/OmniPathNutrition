@@ -1,18 +1,27 @@
-export function consolidateGroceryList(selectedRecipes) {
+// src/services/groceryAggregator.js
+
+export function consolidateGroceryList(scheduledMeals) {
   const aggregatedMap = new Map();
 
-  selectedRecipes.forEach(recipe => {
-    recipe.ingredients.forEach(item => {
-      const key = `${item.name.toLowerCase().trim()}_${item.unit.toLowerCase().trim()}`;
+  scheduledMeals.forEach(entry => {
+    const meal = entry.mealData || entry;
+    if (!meal || !Array.isArray(meal.ingredients)) return;
+
+    meal.ingredients.forEach(item => {
+      const rawName = item.name || item.food || item.text || 'Ingredient';
+      const unit = item.unit || item.measure || 'g';
+      const amount = Number(item.amount || item.weight || 1);
+      const key = `${rawName.toLowerCase().trim()}_${unit.toLowerCase().trim()}`;
+
       if (aggregatedMap.has(key)) {
         const existing = aggregatedMap.get(key);
-        existing.amount += item.amount;
+        existing.amount += amount;
       } else {
         aggregatedMap.set(key, {
           fdcId: item.fdcId || null,
-          name: item.name,
-          amount: item.amount,
-          unit: item.unit,
+          name: rawName,
+          amount: amount,
+          unit: unit,
           checked: false
         });
       }
