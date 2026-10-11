@@ -1,0 +1,26 @@
+/* Pretty Theme: Soft pastels, rounded borders, aesthetic serif/sans typography */
+[data-theme="pretty"] {
+  --bg-primary: #FFF5F7;
+  --card-bg: #FFFFFF;
+  --accent: #F472B6;
+  --text-main: #4A154B;
+  --border-radius: 18px;
+}
+
+/* Manly Theme: Dark metallic, industrial accents, high-contrast, angular borders */
+[data-theme="manly"] {
+  --bg-primary: #121212;
+  --card-bg: #1E1E1E;
+  --accent: #E63946;
+  --text-main: #E0E0E0;
+  --border-radius: 2px;
+}
+
+/* Standard Theme: Modern minimalist Slate/Tailwind styling */
+[data-theme="standard"] {
+  --bg-primary: #F8FAFC;
+  --card-bg: #FFFFFF;
+  --accent: #2563EB;
+  --text-main: #0F172A;
+  --border-radius: 8px;
+}
