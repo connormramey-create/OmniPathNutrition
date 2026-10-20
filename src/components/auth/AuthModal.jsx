@@ -37,9 +37,9 @@ export default function AuthModal({ isOpen, onClose, user }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-[var(--card-bg)] text-[var(--text-main)] p-6 rounded-lg max-w-md w-full border border-gray-700">
-        <h2 className="text-xl font-bold mb-4">{isSignUp ? 'Create Account' : 'Sign In'}</h2>
+    <div className="fixed inset-0 op-backdrop flex items-center justify-center p-4 z-50">
+      <div className="op-modal p-6 max-w-md w-full">
+        <h2 className="op-modal-title text-xl font-bold mb-4">{isSignUp ? 'Create Account' : 'Sign In'}</h2>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -58,7 +58,7 @@ export default function AuthModal({ isOpen, onClose, user }) {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit" className="w-full py-2 bg-[var(--accent)] text-white font-semibold rounded">
+          <button type="submit" className="w-full py-2 op-btn-primary font-semibold rounded">
             {isSignUp ? 'Sign Up' : 'Log In'}
           </button>
         </form>
