@@ -1,0 +1,1118 @@
+{
+ "Dijon mustard": {
+  "usdaDescription": "Mustard, prepared, yellow",
+  "fdcId": null,
+  "per100g": {
+   "calories": 60,
+   "protein": 3.7,
+   "carbs": 5.8,
+   "fat": 3.3
+  },
+  "pricePerLbUSD": 5,
+  "allergens": []
+ },
+ "Italian seasoning": {
+  "usdaDescription": "Spices, oregano, dried",
+  "fdcId": null,
+  "per100g": {
+   "calories": 265,
+   "protein": 9,
+   "carbs": 68.9,
+   "fat": 4.3
+  },
+  "pricePerLbUSD": 15,
+  "allergens": []
+ },
+ "almonds": {
+  "usdaDescription": "Nuts, almonds",
+  "fdcId": null,
+  "per100g": {
+   "calories": 579,
+   "protein": 21.2,
+   "carbs": 21.6,
+   "fat": 49.9
+  },
+  "pricePerLbUSD": 7,
+  "allergens": [
+   "treenut"
+  ]
+ },
+ "apples": {
+  "usdaDescription": "Apples, raw, with skin",
+  "fdcId": null,
+  "per100g": {
+   "calories": 52,
+   "protein": 0.3,
+   "carbs": 13.8,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 1.8,
+  "allergens": []
+ },
+ "avocados": {
+  "usdaDescription": "Avocados, raw, all commercial varieties",
+  "fdcId": null,
+  "per100g": {
+   "calories": 160,
+   "protein": 2,
+   "carbs": 8.5,
+   "fat": 14.7
+  },
+  "pricePerLbUSD": 2.7,
+  "allergens": []
+ },
+ "baby carrots": {
+  "usdaDescription": "Carrots, baby, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 35,
+   "protein": 0.6,
+   "carbs": 8.2,
+   "fat": 0.1
+  },
+  "pricePerLbUSD": 1.6,
+  "allergens": []
+ },
+ "baby spinach": {
+  "usdaDescription": "Spinach, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 23,
+   "protein": 2.9,
+   "carbs": 3.6,
+   "fat": 0.4
+  },
+  "pricePerLbUSD": 4.5,
+  "allergens": []
+ },
+ "balsamic vinegar": {
+  "usdaDescription": "Vinegar, balsamic",
+  "fdcId": null,
+  "per100g": {
+   "calories": 88,
+   "protein": 0.5,
+   "carbs": 17,
+   "fat": 0
+  },
+  "pricePerLbUSD": 5,
+  "allergens": []
+ },
+ "bananas": {
+  "usdaDescription": "Bananas, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 89,
+   "protein": 1.1,
+   "carbs": 22.8,
+   "fat": 0.3
+  },
+  "pricePerLbUSD": 0.65,
+  "allergens": []
+ },
+ "bell peppers": {
+  "usdaDescription": "Peppers, sweet, red, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 31,
+   "protein": 1,
+   "carbs": 6,
+   "fat": 0.3
+  },
+  "pricePerLbUSD": 2.5,
+  "allergens": []
+ },
+ "black pepper": {
+  "usdaDescription": "Spices, pepper, black",
+  "fdcId": null,
+  "per100g": {
+   "calories": 251,
+   "protein": 10.4,
+   "carbs": 64,
+   "fat": 3.3
+  },
+  "pricePerLbUSD": 12,
+  "allergens": []
+ },
+ "blueberries": {
+  "usdaDescription": "Blueberries, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 57,
+   "protein": 0.7,
+   "carbs": 14.5,
+   "fat": 0.3
+  },
+  "pricePerLbUSD": 4,
+  "allergens": []
+ },
+ "broccoli": {
+  "usdaDescription": "Broccoli, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 34,
+   "protein": 2.8,
+   "carbs": 6.6,
+   "fat": 0.4
+  },
+  "pricePerLbUSD": 2.2,
+  "allergens": []
+ },
+ "brown rice": {
+  "usdaDescription": "Rice, brown, long-grain, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 367,
+   "protein": 7.5,
+   "carbs": 76.2,
+   "fat": 3.2
+  },
+  "pricePerLbUSD": 1.5,
+  "allergens": []
+ },
+ "canned black beans": {
+  "usdaDescription": "Beans, black, mature seeds, canned, low sodium",
+  "fdcId": null,
+  "per100g": {
+   "calories": 114,
+   "protein": 7.5,
+   "carbs": 20.4,
+   "fat": 0.4
+  },
+  "pricePerLbUSD": 2.1,
+  "allergens": []
+ },
+ "canned chickpeas": {
+  "usdaDescription": "Chickpeas (garbanzo beans, bengal gram), mature seeds, canned, drained, rinsed in tap water",
+  "fdcId": null,
+  "per100g": {
+   "calories": 139,
+   "protein": 7,
+   "carbs": 22.5,
+   "fat": 2.8
+  },
+  "pricePerLbUSD": 2.1,
+  "allergens": []
+ },
+ "canned diced tomatoes": {
+  "usdaDescription": "Tomatoes, red, ripe, canned, packed in tomato juice",
+  "fdcId": null,
+  "per100g": {
+   "calories": 20,
+   "protein": 0.8,
+   "carbs": 4.1,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 1.2,
+  "allergens": []
+ },
+ "canned tuna": {
+  "usdaDescription": "Fish, tuna, light, canned in water, drained solids",
+  "fdcId": null,
+  "per100g": {
+   "calories": 116,
+   "protein": 25.5,
+   "carbs": 0,
+   "fat": 0.8
+  },
+  "pricePerLbUSD": 5,
+  "allergens": [
+   "fish"
+  ]
+ },
+ "carrots": {
+  "usdaDescription": "Carrots, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 41,
+   "protein": 0.9,
+   "carbs": 9.6,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 1,
+  "allergens": []
+ },
+ "cauliflower": {
+  "usdaDescription": "Cauliflower, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 25,
+   "protein": 1.9,
+   "carbs": 5,
+   "fat": 0.3
+  },
+  "pricePerLbUSD": 2.2,
+  "allergens": []
+ },
+ "celery": {
+  "usdaDescription": "Celery, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 16,
+   "protein": 0.7,
+   "carbs": 3,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 1.5,
+  "allergens": []
+ },
+ "cherry tomatoes": {
+  "usdaDescription": "Tomatoes, red, ripe, raw, year round average",
+  "fdcId": null,
+  "per100g": {
+   "calories": 18,
+   "protein": 0.9,
+   "carbs": 3.9,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 3.5,
+  "allergens": []
+ },
+ "chia seeds": {
+  "usdaDescription": "Seeds, chia seeds, dried",
+  "fdcId": null,
+  "per100g": {
+   "calories": 486,
+   "protein": 16.5,
+   "carbs": 42.1,
+   "fat": 30.7
+  },
+  "pricePerLbUSD": 6,
+  "allergens": []
+ },
+ "chicken breast": {
+  "usdaDescription": "Chicken, broilers or fryers, breast, meat only, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 120,
+   "protein": 22.5,
+   "carbs": 0,
+   "fat": 2.6
+  },
+  "pricePerLbUSD": 4,
+  "allergens": [
+   "meat"
+  ]
+ },
+ "chicken thighs": {
+  "usdaDescription": "Chicken, broilers or fryers, dark meat, thigh, meat only, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 121,
+   "protein": 19.7,
+   "carbs": 0,
+   "fat": 4.1
+  },
+  "pricePerLbUSD": 2.8,
+  "allergens": [
+   "meat"
+  ]
+ },
+ "chili powder": {
+  "usdaDescription": "Spices, chili powder",
+  "fdcId": null,
+  "per100g": {
+   "calories": 282,
+   "protein": 13.5,
+   "carbs": 49.7,
+   "fat": 14.3
+  },
+  "pricePerLbUSD": 10,
+  "allergens": []
+ },
+ "coconut milk": {
+  "usdaDescription": "Nuts, coconut milk, canned (liquid expressed from grated meat and water)",
+  "fdcId": null,
+  "per100g": {
+   "calories": 197,
+   "protein": 2,
+   "carbs": 2.8,
+   "fat": 21.3
+  },
+  "pricePerLbUSD": 3.5,
+  "allergens": []
+ },
+ "cod fillets": {
+  "usdaDescription": "Fish, cod, Atlantic, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 82,
+   "protein": 17.8,
+   "carbs": 0,
+   "fat": 0.7
+  },
+  "pricePerLbUSD": 9,
+  "allergens": [
+   "fish"
+  ]
+ },
+ "corn tortillas": {
+  "usdaDescription": "Tortillas, ready-to-bake or -fry, corn",
+  "fdcId": null,
+  "per100g": {
+   "calories": 218,
+   "protein": 5.7,
+   "carbs": 44.6,
+   "fat": 2.9
+  },
+  "pricePerLbUSD": 2,
+  "allergens": []
+ },
+ "cottage cheese": {
+  "usdaDescription": "Cheese, cottage, lowfat, 2% milkfat",
+  "fdcId": null,
+  "per100g": {
+   "calories": 84,
+   "protein": 11,
+   "carbs": 4.3,
+   "fat": 2.3
+  },
+  "pricePerLbUSD": 3,
+  "allergens": [
+   "dairy"
+  ]
+ },
+ "cucumber": {
+  "usdaDescription": "Cucumber, with peel, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 15,
+   "protein": 0.7,
+   "carbs": 3.6,
+   "fat": 0.1
+  },
+  "pricePerLbUSD": 1.5,
+  "allergens": []
+ },
+ "curry powder": {
+  "usdaDescription": "Spices, curry powder",
+  "fdcId": null,
+  "per100g": {
+   "calories": 325,
+   "protein": 14.3,
+   "carbs": 55.8,
+   "fat": 14
+  },
+  "pricePerLbUSD": 15,
+  "allergens": []
+ },
+ "egg whites": {
+  "usdaDescription": "Egg, white, raw, fresh",
+  "fdcId": null,
+  "per100g": {
+   "calories": 52,
+   "protein": 10.9,
+   "carbs": 0.7,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 3.5,
+  "allergens": [
+   "egg"
+  ]
+ },
+ "eggs": {
+  "usdaDescription": "Egg, whole, raw, fresh",
+  "fdcId": null,
+  "per100g": {
+   "calories": 143,
+   "protein": 12.6,
+   "carbs": 0.7,
+   "fat": 9.5
+  },
+  "pricePerLbUSD": 2.4,
+  "allergens": [
+   "egg"
+  ]
+ },
+ "extra-firm tofu": {
+  "usdaDescription": "Tofu, raw, firm, prepared with calcium sulfate",
+  "fdcId": null,
+  "per100g": {
+   "calories": 144,
+   "protein": 17.3,
+   "carbs": 2.8,
+   "fat": 8.7
+  },
+  "pricePerLbUSD": 2.5,
+  "allergens": [
+   "soy"
+  ]
+ },
+ "feta cheese": {
+  "usdaDescription": "Cheese, feta",
+  "fdcId": null,
+  "per100g": {
+   "calories": 264,
+   "protein": 14.2,
+   "carbs": 4.1,
+   "fat": 21.3
+  },
+  "pricePerLbUSD": 9,
+  "allergens": [
+   "dairy"
+  ]
+ },
+ "frozen corn": {
+  "usdaDescription": "Corn, sweet, yellow, frozen, kernels cut off cob, unprepared",
+  "fdcId": null,
+  "per100g": {
+   "calories": 88,
+   "protein": 3,
+   "carbs": 20.7,
+   "fat": 0.8
+  },
+  "pricePerLbUSD": 1.6,
+  "allergens": []
+ },
+ "frozen edamame": {
+  "usdaDescription": "Edamame, frozen, prepared",
+  "fdcId": null,
+  "per100g": {
+   "calories": 121,
+   "protein": 11.9,
+   "carbs": 8.9,
+   "fat": 5.2
+  },
+  "pricePerLbUSD": 3.5,
+  "allergens": [
+   "soy"
+  ]
+ },
+ "garlic": {
+  "usdaDescription": "Garlic, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 149,
+   "protein": 6.4,
+   "carbs": 33.1,
+   "fat": 0.5
+  },
+  "pricePerLbUSD": 5,
+  "allergens": []
+ },
+ "garlic powder": {
+  "usdaDescription": "Spices, garlic powder",
+  "fdcId": null,
+  "per100g": {
+   "calories": 331,
+   "protein": 16.6,
+   "carbs": 72.7,
+   "fat": 0.7
+  },
+  "pricePerLbUSD": 10,
+  "allergens": []
+ },
+ "green beans": {
+  "usdaDescription": "Beans, snap, green, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 31,
+   "protein": 1.8,
+   "carbs": 7,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 2.5,
+  "allergens": []
+ },
+ "ground cinnamon": {
+  "usdaDescription": "Spices, cinnamon, ground",
+  "fdcId": null,
+  "per100g": {
+   "calories": 247,
+   "protein": 4,
+   "carbs": 80.6,
+   "fat": 1.2
+  },
+  "pricePerLbUSD": 10,
+  "allergens": []
+ },
+ "ground cumin": {
+  "usdaDescription": "Spices, cumin seed",
+  "fdcId": null,
+  "per100g": {
+   "calories": 375,
+   "protein": 17.8,
+   "carbs": 44.2,
+   "fat": 22.3
+  },
+  "pricePerLbUSD": 12,
+  "allergens": []
+ },
+ "ground ginger": {
+  "usdaDescription": "Spices, ginger, ground",
+  "fdcId": null,
+  "per100g": {
+   "calories": 335,
+   "protein": 9,
+   "carbs": 71.6,
+   "fat": 4.2
+  },
+  "pricePerLbUSD": 14,
+  "allergens": []
+ },
+ "ground turkey": {
+  "usdaDescription": "Turkey, ground, 93% lean, 7% fat, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 150,
+   "protein": 18.7,
+   "carbs": 0,
+   "fat": 8.3
+  },
+  "pricePerLbUSD": 5,
+  "allergens": [
+   "meat"
+  ]
+ },
+ "honey": {
+  "usdaDescription": "Honey",
+  "fdcId": null,
+  "per100g": {
+   "calories": 304,
+   "protein": 0.3,
+   "carbs": 82.4,
+   "fat": 0
+  },
+  "pricePerLbUSD": 7,
+  "allergens": []
+ },
+ "hummus": {
+  "usdaDescription": "Hummus, commercial",
+  "fdcId": null,
+  "per100g": {
+   "calories": 166,
+   "protein": 7.9,
+   "carbs": 14.3,
+   "fat": 9.6
+  },
+  "pricePerLbUSD": 6,
+  "allergens": []
+ },
+ "lean ground beef": {
+  "usdaDescription": "Beef, ground, 93% lean meat / 7% fat, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 152,
+   "protein": 20.9,
+   "carbs": 0,
+   "fat": 7
+  },
+  "pricePerLbUSD": 6.5,
+  "allergens": [
+   "meat"
+  ]
+ },
+ "lemons": {
+  "usdaDescription": "Lemons, raw, without peel",
+  "fdcId": null,
+  "per100g": {
+   "calories": 29,
+   "protein": 1.1,
+   "carbs": 9.3,
+   "fat": 0.3
+  },
+  "pricePerLbUSD": 2,
+  "allergens": []
+ },
+ "limes": {
+  "usdaDescription": "Limes, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 30,
+   "protein": 0.7,
+   "carbs": 10.5,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 2,
+  "allergens": []
+ },
+ "low-sodium vegetable broth": {
+  "usdaDescription": "Soup, vegetable broth, ready to serve",
+  "fdcId": null,
+  "per100g": {
+   "calories": 5,
+   "protein": 0.2,
+   "carbs": 0.9,
+   "fat": 0.1
+  },
+  "pricePerLbUSD": 1,
+  "allergens": []
+ },
+ "maple syrup": {
+  "usdaDescription": "Syrups, maple",
+  "fdcId": null,
+  "per100g": {
+   "calories": 260,
+   "protein": 0,
+   "carbs": 67,
+   "fat": 0.1
+  },
+  "pricePerLbUSD": 12,
+  "allergens": []
+ },
+ "marinara sauce": {
+  "usdaDescription": "Sauce, pasta, spaghetti/marinara, ready-to-serve",
+  "fdcId": null,
+  "per100g": {
+   "calories": 51,
+   "protein": 1.4,
+   "carbs": 7.9,
+   "fat": 1.5
+  },
+  "pricePerLbUSD": 2.5,
+  "allergens": []
+ },
+ "medjool dates": {
+  "usdaDescription": "Dates, medjool",
+  "fdcId": null,
+  "per100g": {
+   "calories": 277,
+   "protein": 1.8,
+   "carbs": 75,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 7,
+  "allergens": []
+ },
+ "milk": {
+  "usdaDescription": "Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D",
+  "fdcId": null,
+  "per100g": {
+   "calories": 50,
+   "protein": 3.3,
+   "carbs": 4.8,
+   "fat": 2
+  },
+  "pricePerLbUSD": 0.5,
+  "allergens": [
+   "dairy"
+  ]
+ },
+ "mushrooms": {
+  "usdaDescription": "Mushrooms, white, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 22,
+   "protein": 3.1,
+   "carbs": 3.3,
+   "fat": 0.3
+  },
+  "pricePerLbUSD": 4,
+  "allergens": []
+ },
+ "olive oil": {
+  "usdaDescription": "Oil, olive, salad or cooking",
+  "fdcId": null,
+  "per100g": {
+   "calories": 884,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 100
+  },
+  "pricePerLbUSD": 7,
+  "allergens": []
+ },
+ "parmesan cheese": {
+  "usdaDescription": "Cheese, parmesan, grated",
+  "fdcId": null,
+  "per100g": {
+   "calories": 420,
+   "protein": 28.4,
+   "carbs": 13.9,
+   "fat": 27.8
+  },
+  "pricePerLbUSD": 14,
+  "allergens": [
+   "dairy"
+  ]
+ },
+ "peanut butter": {
+  "usdaDescription": "Peanut butter, smooth style, without salt",
+  "fdcId": null,
+  "per100g": {
+   "calories": 588,
+   "protein": 25.1,
+   "carbs": 20,
+   "fat": 50.4
+  },
+  "pricePerLbUSD": 3.5,
+  "allergens": [
+   "peanut"
+  ]
+ },
+ "plain Greek yogurt": {
+  "usdaDescription": "Yogurt, Greek, plain, nonfat",
+  "fdcId": null,
+  "per100g": {
+   "calories": 59,
+   "protein": 10.2,
+   "carbs": 3.6,
+   "fat": 0.4
+  },
+  "pricePerLbUSD": 3.2,
+  "allergens": [
+   "dairy"
+  ]
+ },
+ "pork tenderloin": {
+  "usdaDescription": "Pork, fresh, loin, tenderloin, separable lean only, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 109,
+   "protein": 20.9,
+   "carbs": 0,
+   "fat": 2.2
+  },
+  "pricePerLbUSD": 4.5,
+  "allergens": [
+   "pork"
+  ]
+ },
+ "potatoes": {
+  "usdaDescription": "Potatoes, red, flesh and skin, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 70,
+   "protein": 1.9,
+   "carbs": 15.9,
+   "fat": 0.1
+  },
+  "pricePerLbUSD": 1,
+  "allergens": []
+ },
+ "pumpkin seeds": {
+  "usdaDescription": "Seeds, pumpkin and squash seed kernels, dried",
+  "fdcId": null,
+  "per100g": {
+   "calories": 559,
+   "protein": 30.2,
+   "carbs": 10.7,
+   "fat": 49.1
+  },
+  "pricePerLbUSD": 8,
+  "allergens": []
+ },
+ "quinoa": {
+  "usdaDescription": "Quinoa, uncooked",
+  "fdcId": null,
+  "per100g": {
+   "calories": 368,
+   "protein": 14.1,
+   "carbs": 64.2,
+   "fat": 6.1
+  },
+  "pricePerLbUSD": 4.5,
+  "allergens": []
+ },
+ "red lentils": {
+  "usdaDescription": "Lentils, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 352,
+   "protein": 24.6,
+   "carbs": 63.4,
+   "fat": 1.1
+  },
+  "pricePerLbUSD": 1.8,
+  "allergens": []
+ },
+ "rice cakes": {
+  "usdaDescription": "Snacks, rice cakes, brown rice, plain",
+  "fdcId": null,
+  "per100g": {
+   "calories": 387,
+   "protein": 8.2,
+   "carbs": 81.5,
+   "fat": 2.8
+  },
+  "pricePerLbUSD": 8,
+  "allergens": []
+ },
+ "rice noodles": {
+  "usdaDescription": "Rice noodles, dry",
+  "fdcId": null,
+  "per100g": {
+   "calories": 364,
+   "protein": 6,
+   "carbs": 80,
+   "fat": 0.6
+  },
+  "pricePerLbUSD": 3.5,
+  "allergens": []
+ },
+ "rolled oats": {
+  "usdaDescription": "Cereals, oats, regular and quick, not fortified, dry",
+  "fdcId": null,
+  "per100g": {
+   "calories": 379,
+   "protein": 13.2,
+   "carbs": 67.7,
+   "fat": 6.5
+  },
+  "pricePerLbUSD": 1.8,
+  "allergens": [
+   "gluten"
+  ]
+ },
+ "romaine lettuce": {
+  "usdaDescription": "Lettuce, cos or romaine, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 17,
+   "protein": 1.2,
+   "carbs": 3.3,
+   "fat": 0.3
+  },
+  "pricePerLbUSD": 2.5,
+  "allergens": []
+ },
+ "salmon fillets": {
+  "usdaDescription": "Fish, salmon, Atlantic, farmed, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 208,
+   "protein": 20.4,
+   "carbs": 0,
+   "fat": 13.4
+  },
+  "pricePerLbUSD": 11,
+  "allergens": [
+   "fish"
+  ]
+ },
+ "salsa": {
+  "usdaDescription": "Sauce, salsa, ready-to-serve",
+  "fdcId": null,
+  "per100g": {
+   "calories": 36,
+   "protein": 1.5,
+   "carbs": 7,
+   "fat": 0.2
+  },
+  "pricePerLbUSD": 4,
+  "allergens": []
+ },
+ "salt": {
+  "usdaDescription": "Salt, table",
+  "fdcId": null,
+  "per100g": {
+   "calories": 0,
+   "protein": 0,
+   "carbs": 0,
+   "fat": 0
+  },
+  "pricePerLbUSD": 0.6,
+  "allergens": []
+ },
+ "shredded cheddar": {
+  "usdaDescription": "Cheese, cheddar",
+  "fdcId": null,
+  "per100g": {
+   "calories": 403,
+   "protein": 22.9,
+   "carbs": 3.1,
+   "fat": 33.3
+  },
+  "pricePerLbUSD": 6,
+  "allergens": [
+   "dairy"
+  ]
+ },
+ "shredded mozzarella": {
+  "usdaDescription": "Cheese, mozzarella, part skim milk",
+  "fdcId": null,
+  "per100g": {
+   "calories": 254,
+   "protein": 24.3,
+   "carbs": 2.8,
+   "fat": 15.9
+  },
+  "pricePerLbUSD": 5,
+  "allergens": [
+   "dairy"
+  ]
+ },
+ "shrimp": {
+  "usdaDescription": "Crustaceans, shrimp, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 85,
+   "protein": 20.1,
+   "carbs": 0,
+   "fat": 0.5
+  },
+  "pricePerLbUSD": 9,
+  "allergens": [
+   "shellfish"
+  ]
+ },
+ "sirloin steak": {
+  "usdaDescription": "Beef, top sirloin, steak, separable lean only, trimmed to 1/8\" fat, choice, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 150,
+   "protein": 22,
+   "carbs": 0,
+   "fat": 6
+  },
+  "pricePerLbUSD": 10,
+  "allergens": [
+   "meat"
+  ]
+ },
+ "smoked paprika": {
+  "usdaDescription": "Spices, paprika",
+  "fdcId": null,
+  "per100g": {
+   "calories": 282,
+   "protein": 14.1,
+   "carbs": 54,
+   "fat": 12.9
+  },
+  "pricePerLbUSD": 12,
+  "allergens": []
+ },
+ "soy milk": {
+  "usdaDescription": "Soymilk, unsweetened, with added calcium, vitamins A and D",
+  "fdcId": null,
+  "per100g": {
+   "calories": 33,
+   "protein": 2.9,
+   "carbs": 1.7,
+   "fat": 1.6
+  },
+  "pricePerLbUSD": 1.1,
+  "allergens": [
+   "soy"
+  ]
+ },
+ "strawberries": {
+  "usdaDescription": "Strawberries, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 32,
+   "protein": 0.7,
+   "carbs": 7.7,
+   "fat": 0.3
+  },
+  "pricePerLbUSD": 3.5,
+  "allergens": []
+ },
+ "sunflower seeds": {
+  "usdaDescription": "Seeds, sunflower seed kernels, dry roasted, without salt",
+  "fdcId": null,
+  "per100g": {
+   "calories": 582,
+   "protein": 19.3,
+   "carbs": 24.1,
+   "fat": 49.8
+  },
+  "pricePerLbUSD": 5,
+  "allergens": []
+ },
+ "sweet potatoes": {
+  "usdaDescription": "Sweet potato, raw, unprepared",
+  "fdcId": null,
+  "per100g": {
+   "calories": 86,
+   "protein": 1.6,
+   "carbs": 20.1,
+   "fat": 0.1
+  },
+  "pricePerLbUSD": 1.3,
+  "allergens": []
+ },
+ "tamari": {
+  "usdaDescription": "Soy sauce made from soy (tamari)",
+  "fdcId": null,
+  "per100g": {
+   "calories": 60,
+   "protein": 10.5,
+   "carbs": 5.6,
+   "fat": 0.1
+  },
+  "pricePerLbUSD": 6,
+  "allergens": [
+   "soy"
+  ]
+ },
+ "walnuts": {
+  "usdaDescription": "Nuts, walnuts, english",
+  "fdcId": null,
+  "per100g": {
+   "calories": 654,
+   "protein": 15.2,
+   "carbs": 13.7,
+   "fat": 65.2
+  },
+  "pricePerLbUSD": 8,
+  "allergens": [
+   "treenut"
+  ]
+ },
+ "whole wheat bread": {
+  "usdaDescription": "Bread, whole-wheat, commercially prepared",
+  "fdcId": null,
+  "per100g": {
+   "calories": 252,
+   "protein": 12.4,
+   "carbs": 42.7,
+   "fat": 3.5
+  },
+  "pricePerLbUSD": 3,
+  "allergens": [
+   "gluten"
+  ]
+ },
+ "whole wheat pasta": {
+  "usdaDescription": "Pasta, whole-wheat, dry",
+  "fdcId": null,
+  "per100g": {
+   "calories": 352,
+   "protein": 14,
+   "carbs": 72,
+   "fat": 2.5
+  },
+  "pricePerLbUSD": 1.8,
+  "allergens": [
+   "gluten"
+  ]
+ },
+ "whole wheat tortillas": {
+  "usdaDescription": "Tortillas, ready-to-bake or -fry, flour, whole wheat",
+  "fdcId": null,
+  "per100g": {
+   "calories": 300,
+   "protein": 9,
+   "carbs": 48,
+   "fat": 7.5
+  },
+  "pricePerLbUSD": 3.5,
+  "allergens": [
+   "gluten"
+  ]
+ },
+ "yellow onion": {
+  "usdaDescription": "Onions, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 40,
+   "protein": 1.1,
+   "carbs": 9.3,
+   "fat": 0.1
+  },
+  "pricePerLbUSD": 1.2,
+  "allergens": []
+ },
+ "zucchini": {
+  "usdaDescription": "Squash, summer, zucchini, includes skin, raw",
+  "fdcId": null,
+  "per100g": {
+   "calories": 17,
+   "protein": 1.2,
+   "carbs": 3.1,
+   "fat": 0.3
+  },
+  "pricePerLbUSD": 1.8,
+  "allergens": []
+ }
+}
