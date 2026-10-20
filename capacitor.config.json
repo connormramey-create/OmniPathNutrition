@@ -1,8 +1,0 @@
-{
-  "appId": "com.omnipath.nutrition",
-  "appName": "OmniPath Nutrition",
-  "webDir": "dist",
-  "server": {
-    "androidScheme": "https"
-  }
-}
