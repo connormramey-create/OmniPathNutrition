@@ -13,6 +13,7 @@ export default function AuthModal({ isOpen, onClose, user }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    if (!auth) { setError('Login is unavailable: Firebase is not configured (see .env.example).'); return; }
     try {
       if (isSignUp) {
         await createUserWithEmailAndPassword(auth, email, password);
@@ -26,6 +27,7 @@ export default function AuthModal({ isOpen, onClose, user }) {
   };
 
   const handleGoogleSignIn = async () => {
+    if (!auth) { setError('Login is unavailable: Firebase is not configured (see .env.example).'); return; }
     try {
       await signInWithPopup(auth, googleProvider);
       onClose();
