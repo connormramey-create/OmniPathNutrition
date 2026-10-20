@@ -1,8 +1,0 @@
-[
-  { "id": "isHalal", "label": "Halal" },
-  { "id": "isVegetarian", "label": "Vegetarian" },
-  { "id": "isDairyFree", "label": "Dairy Free" },
-  { "id": "isNutFree", "label": "Nut Allergy Safe" },
-  { "id": "isGlutenFree", "label": "Gluten Free" },
-  { "id": "isKosher", "label": "Kosher" }
-]
