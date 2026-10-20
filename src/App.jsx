@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef, useDeferredValue } from 'react';
-import mealsData from './data/meals_400.json';
+import mealsData from './data/recipes_500.json'; // previous dataset kept at ./data/meals_400.json
 import dietaryFlagsList from './data/dietary_flags.json';
 import { searchUSDAFood, getUSDAFoodDetails, IS_DEMO_KEY } from './services/usdaService';
 import { exportMealPlanToWord } from './services/exportService';
@@ -37,7 +37,7 @@ const PAGE_SIZE = 40;
 const TIER_MAX_COST = { 1: 2.5, 2: 5, 3: Infinity };
 const LOCAL_SETTINGS_KEY = 'omnipath.settings';
 
-// Prepare the 3,000 starter recipes once (per-serving macros, cost estimate, slot tags)
+// Prepare the 500 starter recipes once (adds planner fields: per-serving macros, cost, slots)
 const STARTER_MEALS = mealsData.map(prepareMeal);
 
 function loadLocalSettings() {
