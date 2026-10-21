@@ -5,7 +5,7 @@ import { searchUSDAFood, getUSDAFoodDetails, IS_DEMO_KEY } from './services/usda
 import { exportMealPlanToWord } from './services/exportService';
 import { consolidateGroceryList } from './services/groceryAggregator';
 import { STORES, STORE_IDS, buildShoppingItems, listAsText } from './services/retailService';
-import { planTotals } from './services/mealPlanGenerator';
+import { planTotals, personPlanTotals } from './services/mealPlanGenerator';
 import {
   saveUserData,
   getUserData,
@@ -15,7 +15,7 @@ import {
   publicAuthorName
 } from './services/dbService';
 import { prepareMeal, estimateRecipeCost } from './utils/mealPrep';
-import { DEFAULT_PROFILE, calculateTargets, validateProfile } from './utils/nutrition';
+import { normalizeProfile, householdTargets, activePeople } from './utils/nutrition';
 import {
   getPortionOptions,
   getDefaultPortion,
@@ -97,7 +97,7 @@ export default function App() {
   const [notesLoadCount, setNotesLoadCount] = useState(0); // bumps when notes arrive from the cloud
   const [preferredStore, setPreferredStore] = useState(local.preferredStore ?? 'kroger');
   const [hidePantry, setHidePantry] = useState(local.hidePantry ?? true);
-  const [profile, setProfile] = useState({ ...DEFAULT_PROFILE, ...(local.profile || {}) });
+  const [profile, setProfile] = useState(() => normalizeProfile(local.profile)); // upgrades single-person saves
 
   // Recipe Collection Filter Scope: 'all' | 'starter' | 'my_recipes' | 'public'
   const [collectionScope, setCollectionScope] = useState('all');
@@ -171,7 +171,7 @@ export default function App() {
             if (cloudData.weeklyPlan) setWeeklyPlan(normalizePlan(cloudData.weeklyPlan));
             if (cloudData.preferredStore && STORES[cloudData.preferredStore]) setPreferredStore(cloudData.preferredStore);
             if (typeof cloudData.hidePantry === 'boolean') setHidePantry(cloudData.hidePantry);
-            if (cloudData.profile) setProfile(p => ({ ...p, ...cloudData.profile }));
+            if (cloudData.profile) setProfile(normalizeProfile(cloudData.profile));
           }
         } catch (err) {
           console.error('Failed to load cloud data:', err);
@@ -359,12 +359,18 @@ export default function App() {
 
   // Calendar Management
   const handleAddMealToSlot = (meal, day, slot) => {
+    // Household mode: one serving per person, tracked so each person's daily totals stay right
+    const diners = activePeople(profile);
+    const portions = profile.householdEnabled && diners.length > 1
+      ? diners.map((p, i) => ({ personId: p.id, name: p.name || `Person ${i + 1}`, servings: 1 }))
+      : null;
     const entry = {
       id: `slot-${Date.now()}-${Math.random()}`,
       day,
       slot,
       mealId: meal.id,
-      servings: 1,
+      servings: portions ? portions.length : 1,
+      ...(portions ? { portions } : {}),
       mealData: meal
     };
     const updatedPlan = [...weeklyPlan, entry];
@@ -595,12 +601,33 @@ export default function App() {
   };
 
   // Daily totals vs targets for the calendar
-  const targets = useMemo(() => (validateProfile(profile).length ? null : calculateTargets(profile)), [profile]);
+  // One row per person in household mode: [{ id, name, targets }] (null while inputs are invalid)
+  const diners = useMemo(() => householdTargets(profile), [profile]);
+  const targets = diners?.[0]?.targets || null;
+  const primaryId = profile.people[0]?.id;
+  const nameFor = (personId, fallback) => {
+    const i = profile.people.findIndex(p => p.id === personId);
+    return i >= 0 ? (profile.people[i].name || '').trim() || `Person ${i + 1}` : fallback || 'Guest';
+  };
+  // Calendar headers: { [day]: [{ id, name, target, calories, protein }] }
   const dayTotals = useMemo(() => {
+    const people = activePeople(profile);
     const out = {};
-    DAYS.forEach(d => { out[d] = planTotals(weeklyPlan.filter(p => p.day === d)); });
+    DAYS.forEach(d => {
+      const entries = weeklyPlan.filter(p => p.day === d);
+      out[d] = people.map((person, i) => {
+        const t = personPlanTotals(entries, person.id, primaryId);
+        return {
+          id: person.id,
+          name: (person.name || '').trim() || `Person ${i + 1}`,
+          target: diners?.[i]?.targets?.calories,
+          calories: t.calories,
+          protein: t.protein
+        };
+      });
+    });
     return out;
-  }, [weeklyPlan]);
+  }, [weeklyPlan, profile, diners, primaryId]);
   const weekCost = useMemo(() => planTotals(weeklyPlan).cost, [weeklyPlan]);
 
   // Inspector derived values
@@ -1087,7 +1114,7 @@ export default function App() {
                     {copied ? 'Copied ✓' : 'Copy list'}
                   </button>
                   <button
-                    onClick={() => exportMealPlanToWord('My OmniPath Weekly Schedule', weeklyPlan, groceryList, recipeNotes)}
+                    onClick={() => exportMealPlanToWord('My OmniPath Weekly Schedule', weeklyPlan, groceryList, recipeNotes, nameFor)}
                     className="w-full py-1.5 text-xs op-btn-secondary font-bold"
                   >
                     Export to .DOCX
@@ -1135,11 +1162,12 @@ export default function App() {
               <div key={day} className="op-day p-2 space-y-2">
                 <div className="text-center border-b border-gray-700 pb-1">
                   <h3 className="font-bold text-xs">{day}</h3>
-                  {t.calories > 0 && (
-                    <p className="text-[10px] opacity-70">
-                      {Math.round(t.calories)}{targets ? `/${targets.calories}` : ''} kcal · P {Math.round(t.protein)}g
+                  {t.filter(p => p.calories > 0).map(p => (
+                    <p key={p.id} className="text-[10px] opacity-70 truncate" title={p.name}>
+                      {t.length > 1 && <span className="font-bold">{p.name}: </span>}
+                      {Math.round(p.calories)}{p.target ? `/${p.target}` : ''} kcal · P {Math.round(p.protein)}g
                     </p>
-                  )}
+                  ))}
                 </div>
                 {SLOTS.map((slot) => {
                   const items = weeklyPlan.filter(p => p.day === day && p.slot === slot);
@@ -1149,12 +1177,19 @@ export default function App() {
                       {items.map(entry => (
                         <div
                           key={entry.id}
-                          onClick={() => setViewRecipeModal({ ...entry.mealData, plannedServings: entry.servings })}
+                          onClick={() => setViewRecipeModal({ ...entry.mealData, plannedServings: entry.servings, plannedPortions: entry.portions })}
                           className="p-1.5 op-entry cursor-pointer rounded text-[11px] flex justify-between items-start"
                         >
-                          <span className="font-medium truncate pr-1">
-                            {entry.mealData?.name}
-                            <span className="opacity-60"> ×{fmtServ(entry.servings || 1)}</span>
+                          <span className="font-medium min-w-0 pr-1">
+                            <span className="block truncate">
+                              {entry.mealData?.name}
+                              <span className="opacity-60"> ×{fmtServ(entry.servings || 1)}</span>
+                            </span>
+                            {entry.portions?.length > 1 && (
+                              <span className="block text-[10px] opacity-60 truncate">
+                                {entry.portions.map(p => `${nameFor(p.personId, p.name)} ${fmtServ(p.servings)}`).join(' · ')}
+                              </span>
+                            )}
                           </span>
                           <button
                             onClick={(e) => handleRemoveFromSlot(entry.id, e)}
@@ -1184,6 +1219,9 @@ export default function App() {
                 <p className="text-xs opacity-70">
                   Recipe makes {viewRecipeModal.servings} serving(s)
                   {viewRecipeModal.plannedServings ? ` · planned: ${fmtServ(viewRecipeModal.plannedServings)}` : ''}
+                  {viewRecipeModal.plannedPortions?.length > 1
+                    ? ` (${viewRecipeModal.plannedPortions.map(p => `${nameFor(p.personId, p.name)} ${fmtServ(p.servings)}`).join(', ')})`
+                    : ''}
                   {' · '}~${viewRecipeModal.costPerServing?.toFixed(2)}/serving
                 </p>
                 {viewRecipeModal.isPublic && !isOwnRecipe(viewRecipeModal) && (
