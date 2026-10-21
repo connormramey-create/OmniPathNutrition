@@ -25,17 +25,42 @@ import {
   scaleMacros,
   sumMacros
 } from './utils/usdaPortions';
+import { buildIngredientOptions, containsExcludedIngredient } from './utils/ingredientFilter';
 import AuthModal from './components/auth/AuthModal';
 import MealPlanGenerator from './components/planner/MealPlanGenerator';
 import CartBuilderModal from './components/shopping/CartBuilderModal';
+import IngredientExcludeFilter from './components/filters/IngredientExcludeFilter';
 import { auth } from './config/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const SLOTS = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
 const PAGE_SIZE = 40;
-const TIER_MAX_COST = { 1: 2.5, 2: 5, 3: Infinity };
 const LOCAL_SETTINGS_KEY = 'omnipath.settings';
+const MAX_NOTE_LENGTH = 2000;
+
+// Older versions stored a 3-button budget tier; convert it to a dollar limit ('' = any).
+const TIER_TO_MAX_COST = { 1: '2.50', 2: '5.00', 3: '' };
+const initialMaxCost = (saved) => {
+  if (saved.maxCostPerServing !== undefined && saved.maxCostPerServing !== null) return String(saved.maxCostPerServing);
+  return TIER_TO_MAX_COST[saved.budgetTier] ?? '';
+};
+const maxCostLimit = (value) => {
+  const n = parseFloat(value);
+  return Number.isFinite(n) && n > 0 ? n : Infinity;
+};
+
+// Notes are stored in Firestore as an array: setDoc(..., { merge: true }) deep-merges maps,
+// so a deleted key in a map would never be removed from the cloud copy.
+const notesToArray = (notes = {}) =>
+  Object.entries(notes).map(([recipeId, n]) => ({ recipeId, text: n.text, updatedAt: n.updatedAt }));
+const notesFromArray = (arr) => {
+  const out = {};
+  (Array.isArray(arr) ? arr : []).forEach(n => {
+    if (n?.recipeId && typeof n.text === 'string' && n.text.trim()) out[n.recipeId] = { text: n.text, updatedAt: n.updatedAt };
+  });
+  return out;
+};
 
 // Prepare the 500 starter recipes once (adds planner fields: per-serving macros, cost, slots)
 const STARTER_MEALS = mealsData.map(prepareMeal);
@@ -62,8 +87,14 @@ export default function App() {
   const [theme, setTheme] = useState(() => document.documentElement.getAttribute('data-theme') || 'standard');
   const [user, setUser] = useState(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [budgetTier, setBudgetTier] = useState(local.budgetTier ?? 3);
+  const [maxCostPerServing, setMaxCostPerServing] = useState(() => initialMaxCost(local)); // string, '' = any
   const [activeFlags, setActiveFlags] = useState(local.activeFlags ?? []);
+  const [excludedIngredients, setExcludedIngredients] = useState(local.excludedIngredients ?? []);
+  // Personal notes on any recipe, tied to the signed-in account: { [recipeId]: { text, updatedAt } }
+  const [recipeNotes, setRecipeNotes] = useState({});
+  const [noteDraft, setNoteDraft] = useState('');
+  const [noteStatus, setNoteStatus] = useState('');
+  const [notesLoadCount, setNotesLoadCount] = useState(0); // bumps when notes arrive from the cloud
   const [preferredStore, setPreferredStore] = useState(local.preferredStore ?? 'kroger');
   const [hidePantry, setHidePantry] = useState(local.hidePantry ?? true);
   const [profile, setProfile] = useState({ ...DEFAULT_PROFILE, ...(local.profile || {}) });
@@ -100,6 +131,7 @@ export default function App() {
   const [newRecipeIngredients, setNewRecipeIngredients] = useState([]);
   const [newRecipeServings, setNewRecipeServings] = useState(1);
   const [newRecipeCost, setNewRecipeCost] = useState('');
+  const [newRecipeSteps, setNewRecipeSteps] = useState(['']);
   const [isNewRecipePublic, setIsNewRecipePublic] = useState(false);
 
   // Public community recipes shared by every account (Firestore /publicRecipes)
@@ -113,6 +145,7 @@ export default function App() {
     if (!auth) return undefined; // guest mode – Firebase not configured
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+      if (!currentUser) setRecipeNotes({}); // notes belong to the account – hide them after logout
       if (currentUser) {
         try {
           const cloudData = await getUserData(currentUser.uid);
@@ -122,8 +155,11 @@ export default function App() {
               document.documentElement.setAttribute('data-theme', cloudData.theme);
               try { localStorage.setItem('omnipath.theme', cloudData.theme); } catch { /* ignore */ }
             }
-            if (cloudData.budgetTier) setBudgetTier(cloudData.budgetTier);
+            if (cloudData.maxCostPerServing !== undefined || cloudData.budgetTier) setMaxCostPerServing(initialMaxCost(cloudData));
             if (cloudData.activeFlags) setActiveFlags(cloudData.activeFlags);
+            if (Array.isArray(cloudData.excludedIngredients)) setExcludedIngredients(cloudData.excludedIngredients);
+            setRecipeNotes(notesFromArray(cloudData.recipeNotes));
+            setNotesLoadCount(c => c + 1);
             if (cloudData.customRecipes) {
               setCustomRecipes(cloudData.customRecipes);
               // Recipes marked public before the shared collection existed only lived in
@@ -166,25 +202,35 @@ export default function App() {
     try {
       localStorage.setItem(
         LOCAL_SETTINGS_KEY,
-        JSON.stringify({ budgetTier, activeFlags, preferredStore, hidePantry, profile })
+        JSON.stringify({ maxCostPerServing, activeFlags, excludedIngredients, preferredStore, hidePantry, profile })
       );
     } catch {
       // storage unavailable – ignore
     }
-  }, [budgetTier, activeFlags, preferredStore, hidePantry, profile]);
+  }, [maxCostPerServing, activeFlags, excludedIngredients, preferredStore, hidePantry, profile]);
+
+  // Always sync the latest state – debounced saves run from an older render and would
+  // otherwise overwrite newer changes (e.g. a note saved while a profile edit is pending).
+  const latestStateRef = useRef({});
+  latestStateRef.current = {
+    theme,
+    maxCostPerServing,
+    activeFlags,
+    excludedIngredients,
+    customRecipes,
+    weeklyPlan,
+    preferredStore,
+    hidePantry,
+    profile,
+    recipeNotes
+  };
 
   const syncToCloud = (updatedState = {}) => {
     if (!user) return;
+    const next = { ...latestStateRef.current, ...updatedState };
     saveUserData(user.uid, {
-      theme,
-      budgetTier,
-      activeFlags,
-      customRecipes,
-      weeklyPlan,
-      preferredStore,
-      hidePantry,
-      profile,
-      ...updatedState
+      ...next,
+      recipeNotes: notesToArray(next.recipeNotes)
     }).catch(err => console.error('Cloud sync failed:', err));
   };
 
@@ -217,6 +263,41 @@ export default function App() {
     profileSaveTimer.current = setTimeout(() => syncToCloud({ profile: next }), 800);
   };
 
+  const handleExcludedChange = (next) => {
+    setExcludedIngredients(next);
+    syncToCloud({ excludedIngredients: next });
+  };
+
+  // Debounced like the profile so typing "4.50" doesn't write to Firestore per keystroke
+  const costSaveTimer = useRef(null);
+  const handleMaxCostChange = (value) => {
+    setMaxCostPerServing(value);
+    clearTimeout(costSaveTimer.current);
+    costSaveTimer.current = setTimeout(() => syncToCloud({ maxCostPerServing: value }), 800);
+  };
+
+  // ---------- Personal recipe notes (saved to the signed-in account) ----------
+  const viewedRecipeId = viewRecipeModal?.id;
+  useEffect(() => {
+    setNoteDraft(viewedRecipeId ? recipeNotes[viewedRecipeId]?.text || '' : '');
+    setNoteStatus('');
+    // Only reset the draft when a different recipe is opened or notes finish loading
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [viewedRecipeId, notesLoadCount]);
+
+  const saveRecipeNote = (recipeId, text) => {
+    if (!user || !recipeId) return;
+    const trimmed = text.trim().slice(0, MAX_NOTE_LENGTH);
+    const updated = { ...recipeNotes };
+    if (trimmed) updated[recipeId] = { text: trimmed, updatedAt: new Date().toISOString() };
+    else delete updated[recipeId];
+    setRecipeNotes(updated);
+    setNoteDraft(trimmed);
+    syncToCloud({ recipeNotes: updated });
+    setNoteStatus(trimmed ? 'Note saved to your account.' : 'Note removed.');
+    setTimeout(() => setNoteStatus(''), 3000);
+  };
+
   const preparedCustom = useMemo(() => customRecipes.map(prepareMeal), [customRecipes]);
 
   // Other people's public recipes (your own already appear via customRecipes)
@@ -225,12 +306,19 @@ export default function App() {
     [publicRecipes, user]
   );
 
-  // Recipes that pass the dietary filters (used by the generator)
+  // Every ingredient name across all recipes, for the "Exclude ingredients" picker
+  const ingredientOptions = useMemo(
+    () => buildIngredientOptions([...STARTER_MEALS, ...preparedCustom, ...preparedCommunity]),
+    [preparedCustom, preparedCommunity]
+  );
+
+  // Recipes that pass the dietary and ingredient filters (used by the generator)
   const dietaryEligibleMeals = useMemo(() => {
     return [...preparedCustom, ...preparedCommunity, ...STARTER_MEALS].filter(meal =>
-      activeFlags.every(flag => !meal.dietaryFlags || meal.dietaryFlags[flag])
+      activeFlags.every(flag => !meal.dietaryFlags || meal.dietaryFlags[flag]) &&
+      !containsExcludedIngredient(meal, excludedIngredients)
     );
-  }, [preparedCustom, preparedCommunity, activeFlags]);
+  }, [preparedCustom, preparedCommunity, activeFlags, excludedIngredients]);
 
   // Combine & Filter Recipes based on Scope & Search
   const filteredMeals = useMemo(() => {
@@ -245,7 +333,7 @@ export default function App() {
       baseList = [...preparedCustom, ...preparedCommunity, ...STARTER_MEALS];
     }
 
-    const maxCost = TIER_MAX_COST[budgetTier] ?? Infinity;
+    const maxCost = maxCostLimit(maxCostPerServing);
     const query = deferredSearch.trim().toLowerCase();
 
     return baseList.filter(meal => {
@@ -253,18 +341,20 @@ export default function App() {
       for (const flag of activeFlags) {
         if (meal.dietaryFlags && !meal.dietaryFlags[flag]) return false;
       }
+      if (containsExcludedIngredient(meal, excludedIngredients)) return false;
       if (query) {
         const titleMatch = meal.name.toLowerCase().includes(query);
         const ingredientMatch = meal.ingredients?.some(i => (i.name || i.food || i.text || '').toLowerCase().includes(query));
-        if (!titleMatch && !ingredientMatch) return false;
+        const noteMatch = (recipeNotes[meal.id]?.text || '').toLowerCase().includes(query);
+        if (!titleMatch && !ingredientMatch && !noteMatch) return false;
       }
       return true;
     });
-  }, [preparedCustom, preparedCommunity, collectionScope, budgetTier, activeFlags, deferredSearch]);
+  }, [preparedCustom, preparedCommunity, collectionScope, maxCostPerServing, activeFlags, excludedIngredients, deferredSearch, recipeNotes]);
 
   // Only render a page of results – rendering all 3,000 cards (each with a 28-option
   // dropdown) froze typing in the search box.
-  useEffect(() => setVisibleCount(PAGE_SIZE), [collectionScope, budgetTier, activeFlags, deferredSearch]);
+  useEffect(() => setVisibleCount(PAGE_SIZE), [collectionScope, maxCostPerServing, activeFlags, excludedIngredients, deferredSearch]);
   const visibleMeals = filteredMeals.slice(0, visibleCount);
 
   // Calendar Management
@@ -407,7 +497,10 @@ export default function App() {
   const handleDeleteRecipe = async (recipe) => {
     const updatedRecipes = customRecipes.filter(r => r.id !== recipe.id);
     setCustomRecipes(updatedRecipes);
-    syncToCloud({ customRecipes: updatedRecipes });
+    const updatedNotes = { ...recipeNotes };
+    delete updatedNotes[recipe.id];
+    setRecipeNotes(updatedNotes);
+    syncToCloud({ customRecipes: updatedRecipes, recipeNotes: updatedNotes });
     setConfirmDeleteId(null);
     setViewRecipeModal(null);
     if (recipe.isPublic && user) {
@@ -416,6 +509,20 @@ export default function App() {
   };
 
   const isOwnRecipe = (r) => customRecipes.some(c => c.id === r?.id);
+
+  // Cooking-instruction steps in the recipe builder
+  const updateStep = (idx, text) => setNewRecipeSteps(prev => prev.map((s, i) => (i === idx ? text : s)));
+  const addStep = () => setNewRecipeSteps(prev => [...prev, '']);
+  const removeStep = (idx) => setNewRecipeSteps(prev => (prev.length > 1 ? prev.filter((_, i) => i !== idx) : ['']));
+  const moveStep = (idx, dir) =>
+    setNewRecipeSteps(prev => {
+      const to = idx + dir;
+      if (to < 0 || to >= prev.length) return prev;
+      const next = [...prev];
+      [next[idx], next[to]] = [next[to], next[idx]];
+      return next;
+    });
+  const filledSteps = newRecipeSteps.map(s => s.trim()).filter(Boolean);
 
   const handleSaveCustomRecipe = () => {
     if (!newRecipeTitle.trim() || newRecipeIngredients.length === 0) return;
@@ -444,7 +551,10 @@ export default function App() {
       dietaryFlags: { isHalal: true, isVegetarian: false, isDairyFree: true, isNutFree: true, isGlutenFree: true, isKosher: true },
       // Drop the cached option list to keep the saved document small
       ingredients: newRecipeIngredients.map(({ portionOptions, ...rest }) => rest),
-      instructions: 'Combine ingredients, portion appropriately, and cook to desired preference.'
+      // Same "1. step\n2. step" format as the starter recipes
+      instructions: filledSteps.length
+        ? filledSteps.map((s, i) => `${i + 1}. ${s.replace(/\s*\n\s*/g, ' ')}`).join('\n')
+        : 'Combine ingredients, portion appropriately, and cook to desired preference.'
     };
 
     const updatedRecipes = [newRecipe, ...customRecipes];
@@ -461,6 +571,7 @@ export default function App() {
     setNewRecipeIngredients([]);
     setNewRecipeServings(1);
     setNewRecipeCost('');
+    setNewRecipeSteps(['']);
     setIsNewRecipePublic(false);
     syncToCloud({ customRecipes: updatedRecipes });
   };
@@ -538,7 +649,8 @@ export default function App() {
       </header>
 
       {/* Settings: Store, Budget, Dietary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 op-card p-4">
+      {/* relative z-20 keeps the ingredient dropdown above the cards below */}
+      <div className="relative z-20 grid grid-cols-1 md:grid-cols-3 gap-4 op-card p-4">
         <div>
           <label className="text-xs font-bold uppercase block mb-2">Preferred Store</label>
           <div className="flex gap-2" role="radiogroup" aria-label="Preferred store">
@@ -558,36 +670,60 @@ export default function App() {
           </div>
         </div>
         <div>
-          <label className="text-xs font-bold uppercase block mb-2">Max Cost per Serving</label>
-          <div className="flex gap-2">
-            {[1, 2, 3].map((tier) => (
+          <label htmlFor="maxCostInput" className="text-xs font-bold uppercase block mb-2">Max Cost per Serving</label>
+          <div className="flex gap-2 items-center">
+            <div className="relative flex-1">
+              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs opacity-70 pointer-events-none">$</span>
+              <input
+                id="maxCostInput"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.25"
+                placeholder="Any"
+                value={maxCostPerServing}
+                onChange={(e) => handleMaxCostChange(e.target.value)}
+                className="w-full py-1 pl-5 pr-2 text-xs rounded border border-gray-600 bg-transparent font-semibold"
+              />
+            </div>
+            {maxCostPerServing !== '' && (
               <button
-                key={tier}
-                onClick={() => { setBudgetTier(tier); syncToCloud({ budgetTier: tier }); }}
-                className={`flex-1 py-1 text-xs font-semibold rounded ${
-                  budgetTier === tier ? 'op-btn-primary op-active' : 'op-toggle'
-                }`}
+                type="button"
+                onClick={() => handleMaxCostChange('')}
+                className="px-2 py-1 text-xs font-semibold rounded op-toggle"
               >
-                {tier === 1 ? '≤ $2.50' : tier === 2 ? '≤ $5.00' : 'Any'}
+                Any
               </button>
-            ))}
+            )}
           </div>
+          <p className="text-[10px] opacity-60 mt-1">
+            {maxCostLimit(maxCostPerServing) === Infinity
+              ? 'Leave blank to show recipes at any cost.'
+              : `Showing recipes ≤ $${maxCostLimit(maxCostPerServing).toFixed(2)} per serving.`}
+          </p>
         </div>
-        <div>
-          <label className="text-xs font-bold uppercase block mb-2">Dietary Filters</label>
-          <div className="flex flex-wrap gap-1.5">
-            {dietaryFlagsList.map(flag => (
-              <button
-                key={flag.id}
-                onClick={() => toggleFlag(flag.id)}
-                className={`op-chip px-2 py-0.5 text-[11px] font-semibold rounded-full ${
-                  activeFlags.includes(flag.id) ? 'op-btn-primary op-active' : 'op-toggle'
-                }`}
-              >
-                {flag.label}
-              </button>
-            ))}
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs font-bold uppercase block mb-2">Dietary Filters</label>
+            <div className="flex flex-wrap gap-1.5">
+              {dietaryFlagsList.map(flag => (
+                <button
+                  key={flag.id}
+                  onClick={() => toggleFlag(flag.id)}
+                  className={`op-chip px-2 py-0.5 text-[11px] font-semibold rounded-full ${
+                    activeFlags.includes(flag.id) ? 'op-btn-primary op-active' : 'op-toggle'
+                  }`}
+                >
+                  {flag.label}
+                </button>
+              ))}
+            </div>
           </div>
+          <IngredientExcludeFilter
+            options={ingredientOptions}
+            selected={excludedIngredients}
+            onChange={handleExcludedChange}
+          />
         </div>
       </div>
 
@@ -649,6 +785,11 @@ export default function App() {
                   Per serving: {meal.perServing.calories} kcal | P: {meal.perServing.protein}g | C: {meal.perServing.carbs}g | F: {meal.perServing.fat}g
                 </p>
                 <p className="text-[10px] opacity-60">Serves {meal.servings} · ~${meal.costPerServing.toFixed(2)}/serving (est.)</p>
+                {recipeNotes[meal.id] && (
+                  <p className="text-[10px] italic opacity-80 truncate" title={recipeNotes[meal.id].text}>
+                    📝 {recipeNotes[meal.id].text}
+                  </p>
+                )}
 
                 <select
                   onClick={(e) => e.stopPropagation()}
@@ -685,7 +826,7 @@ export default function App() {
               <p className="text-xs opacity-75">
                 {collectionScope === 'public' && !user
                   ? 'Log in to see recipes shared by the community.'
-                  : 'No recipes match. Try a different search, a higher cost limit, or fewer dietary filters.'}
+                  : 'No recipes match. Try a different search, a higher cost limit, or fewer dietary or ingredient filters.'}
               </p>
             )}
           </div>
@@ -867,6 +1008,43 @@ export default function App() {
             </div>
           )}
 
+          {/* Cooking instructions (numbered steps) */}
+          <div className="space-y-1.5">
+            <div className="flex justify-between items-center">
+              <h4 className="text-xs font-bold uppercase">Cooking Instructions ({filledSteps.length} step{filledSteps.length === 1 ? '' : 's'})</h4>
+              <button type="button" onClick={addStep} className="text-[10px] font-bold px-2 py-0.5 rounded op-toggle">
+                + Add step
+              </button>
+            </div>
+            <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
+              {newRecipeSteps.map((step, idx) => (
+                <div key={idx} className="flex gap-1.5 items-start">
+                  <span className="text-[11px] font-bold opacity-70 w-4 pt-1.5 text-right shrink-0">{idx + 1}.</span>
+                  <textarea
+                    rows={2}
+                    value={step}
+                    placeholder={idx === 0 ? 'e.g. Preheat the oven to 400°F and line a sheet pan.' : 'Next step…'}
+                    onChange={(e) => updateStep(idx, e.target.value)}
+                    onKeyDown={(e) => {
+                      // Ctrl/Cmd + Enter adds a new step below
+                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); addStep(); }
+                    }}
+                    className="flex-1 min-w-0 p-1.5 text-xs rounded border border-gray-600 bg-transparent resize-y"
+                    aria-label={`Step ${idx + 1}`}
+                  />
+                  <div className="flex flex-col text-[10px] leading-none shrink-0">
+                    <button type="button" onClick={() => moveStep(idx, -1)} disabled={idx === 0} className="px-1 py-0.5 disabled:opacity-30" aria-label={`Move step ${idx + 1} up`}>▲</button>
+                    <button type="button" onClick={() => moveStep(idx, 1)} disabled={idx === newRecipeSteps.length - 1} className="px-1 py-0.5 disabled:opacity-30" aria-label={`Move step ${idx + 1} down`}>▼</button>
+                    <button type="button" onClick={() => removeStep(idx)} className="px-1 py-0.5 text-red-400 font-bold" aria-label={`Remove step ${idx + 1}`}>×</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {filledSteps.length === 0 && (
+              <p className="text-[10px] opacity-60">Optional – if left blank, generic instructions are saved.</p>
+            )}
+          </div>
+
           <button
             onClick={handleSaveCustomRecipe}
             disabled={!newRecipeTitle || newRecipeIngredients.length === 0}
@@ -909,7 +1087,7 @@ export default function App() {
                     {copied ? 'Copied ✓' : 'Copy list'}
                   </button>
                   <button
-                    onClick={() => exportMealPlanToWord('My OmniPath Weekly Schedule', weeklyPlan, groceryList)}
+                    onClick={() => exportMealPlanToWord('My OmniPath Weekly Schedule', weeklyPlan, groceryList, recipeNotes)}
                     className="w-full py-1.5 text-xs op-btn-secondary font-bold"
                   >
                     Export to .DOCX
@@ -1037,6 +1215,53 @@ export default function App() {
             <div>
               <h4 className="font-bold text-xs uppercase mb-1">Instructions:</h4>
               <p className="text-xs opacity-90 leading-relaxed whitespace-pre-line">{viewRecipeModal.instructions || 'Combine ingredients and prepare as desired.'}</p>
+            </div>
+
+            {/* Personal notes – private to the signed-in account, on any recipe */}
+            <div className="border-t border-gray-700 pt-3 space-y-1.5">
+              <div className="flex justify-between items-center">
+                <label htmlFor="recipeNoteInput" className="font-bold text-xs uppercase">My Notes</label>
+                {user && <span className="text-[10px] opacity-60">Only visible to you</span>}
+              </div>
+              {user ? (
+                <>
+                  <textarea
+                    id="recipeNoteInput"
+                    rows={3}
+                    maxLength={MAX_NOTE_LENGTH}
+                    value={noteDraft}
+                    onChange={(e) => setNoteDraft(e.target.value)}
+                    placeholder="e.g. Used half the salt, added spinach. Kids loved it."
+                    className="w-full p-2 text-xs rounded border border-gray-600 bg-transparent resize-y"
+                  />
+                  <div className="flex gap-2 items-center">
+                    <button
+                      type="button"
+                      onClick={() => saveRecipeNote(viewRecipeModal.id, noteDraft)}
+                      disabled={noteDraft.trim() === (recipeNotes[viewRecipeModal.id]?.text || '')}
+                      className="px-3 py-1 text-xs font-bold op-btn-primary rounded disabled:opacity-50"
+                    >
+                      Save note
+                    </button>
+                    {recipeNotes[viewRecipeModal.id] && (
+                      <button
+                        type="button"
+                        onClick={() => saveRecipeNote(viewRecipeModal.id, '')}
+                        className="px-3 py-1 text-xs font-bold border border-red-500 text-red-400 rounded"
+                      >
+                        Delete note
+                      </button>
+                    )}
+                    <span className="text-[10px] opacity-60 ml-auto">{noteDraft.length}/{MAX_NOTE_LENGTH}</span>
+                  </div>
+                  {noteStatus && <p className="text-xs text-green-400">{noteStatus}</p>}
+                </>
+              ) : (
+                <p className="text-[11px] opacity-70">
+                  <button type="button" onClick={() => setIsAuthOpen(true)} className="underline font-semibold">Log in</button>
+                  {' '}to add personal notes to this recipe.
+                </p>
+              )}
             </div>
 
             {isOwnRecipe(viewRecipeModal) && (
